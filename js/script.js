@@ -1,5 +1,23 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const container = document.getElementById("container-salas");
+    const modalOverlay = document.getElementById("modal-sala");
+    const modalClose = document.getElementById("modal-close");
+    const modalImg = document.getElementById("modal-img");
+    const modalTitulo = document.getElementById("modal-titulo");
+    const modalDesc = document.getElementById("modal-desc");
+    const modalBeneficios = document.getElementById("modal-beneficios");
+
+    const fecharModal = () => {
+        modalOverlay.classList.remove("active");
+    };
+
+    modalClose.addEventListener("click", fecharModal);
+
+    modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) {
+            fecharModal();
+        }
+    });
 
     try {
         const response = await fetch("/api/get-salas");
@@ -42,6 +60,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             cardSala.appendChild(img);
             cardSala.appendChild(infoSala);
+
+            cardSala.addEventListener("click", () => {
+                modalImg.src = sala.img;
+                modalImg.alt = sala.titulo;
+                modalTitulo.textContent = sala.titulo;
+                modalDesc.textContent = sala.info;
+                
+                modalBeneficios.innerHTML = "";
+                sala.beneficios.forEach((beneficio) => {
+                    const pModBen = document.createElement("p");
+                    pModBen.textContent = beneficio.toUpperCase();
+                    modalBeneficios.appendChild(pModBen);
+                });
+
+                modalOverlay.classList.add("active");
+            });
 
             container.appendChild(cardSala);
         });
