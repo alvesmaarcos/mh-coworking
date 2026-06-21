@@ -1,4 +1,4 @@
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3Client = new S3Client({
@@ -30,24 +30,44 @@ export default async function handler(req, res) {
             salas.map(async (sala) => {
                 const s3Prefix = `s3://${bucketName}/`;
                 const imageKey = sala.img.replace(s3Prefix, "");
+                const folderPrefix = imageKey.substring(0, imageKey.lastIndexOf('/') + 1);
 
-                const imgCommand = new GetObjectCommand({
+                const listCommand = new ListObjectsV2Command({
+                    Bucket: bucketName,
+                    Prefix: folderPrefix,
+                });
+
+                const listData = await s3Client.send(listCommand);
+
+                let galeriaUrls = [];
+                if (listData.Contents) {
+                    galeriaUrls = await Promise.all(
+                        listData.Contents.map(async (item) => {
+                            const imgCommand = new GetObjectCommand({
+                                Bucket: bucketName,
+                                Key: item.Key,
+                            });
+                            return await getSignedUrl(s3Client, imgCommand, { expiresIn: 3600 });
+                        })
+                    );
+                }
+
+                const coverCommand = new GetObjectCommand({
                     Bucket: bucketName,
                     Key: imageKey,
                 });
-
-                const signedUrl = await getSignedUrl(s3Client, imgCommand, { expiresIn: 3600 });
+                const coverUrl = await getSignedUrl(s3Client, coverCommand, { expiresIn: 3600 });
 
                 return {
                     ...sala,
-                    img: signedUrl,
+                    img: coverUrl,
+                    galeria: galeriaUrls,
                 };
             })
         );
 
         res.status(200).json(salasComUrls);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Erro interno ao processar a requisição" });
+        res.status(500).json({ error: "Erro interno" });
     }
 }

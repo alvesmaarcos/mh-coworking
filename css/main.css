@@ -272,8 +272,8 @@ a {
 
 .modal-content {
     background-color: var(--surface-container-lowest);
-    width: 90%;
-    max-width: 800px;
+    width: 800px;
+    height: 500px;
     border-radius: 8px;
     display: flex;
     flex-direction: row;
@@ -282,9 +282,52 @@ a {
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
 }
 
-.modal-content img {
+.modal-gallery {
     width: 50%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--surface-container-low);
+}
+
+.modal-gallery > img {
+    width: 100%;
+    height: 350px;
     object-fit: cover;
+}
+
+.modal-thumbnails {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 10px;
+    gap: 10px;
+    height: 150px;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.modal-thumbnails::-webkit-scrollbar {
+    height: 8px;
+}
+
+.modal-thumbnails::-webkit-scrollbar-thumb {
+    background-color: var(--primary-fixed-dim);
+    border-radius: 4px;
+}
+
+.modal-thumbnails img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+    flex-shrink: 0;
+}
+
+.modal-thumbnails img.active {
+    border-color: var(--primary);
 }
 
 .modal-info {
@@ -292,7 +335,8 @@ a {
     width: 50%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 .modal-info h1 {
@@ -311,28 +355,42 @@ a {
     position: absolute;
     top: 15px;
     right: 20px;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     color: var(--primary);
     cursor: pointer;
     transition: color 0.2s;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-close:hover {
-    color: var(--secondary);
+    background: rgba(255, 255, 255, 1);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
     .modal-content {
         flex-direction: column;
-        max-height: 90vh;
-        overflow-y: auto;
+        width: 90%;
+        height: 90vh;
     }
-    .modal-content img {
+    .modal-gallery, .modal-info {
         width: 100%;
+    }
+    .modal-gallery > img {
         height: 250px;
     }
-    .modal-info {
-        width: 100%;
+    .modal-thumbnails {
+        height: 100px;
+    }
+    .modal-thumbnails img {
+        width: 60px;
+        height: 60px;
     }
 }

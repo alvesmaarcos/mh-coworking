@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const modalTitulo = document.getElementById("modal-titulo");
     const modalDesc = document.getElementById("modal-desc");
     const modalBeneficios = document.getElementById("modal-beneficios");
+    const modalThumbnails = document.getElementById("modal-thumbnails");
 
     const fecharModal = () => {
         modalOverlay.classList.remove("active");
@@ -73,6 +74,27 @@ document.addEventListener("DOMContentLoaded", async () => {
                     pModBen.textContent = beneficio.toUpperCase();
                     modalBeneficios.appendChild(pModBen);
                 });
+
+                modalThumbnails.innerHTML = "";
+                if (sala.galeria && sala.galeria.length > 0) {
+                    sala.galeria.forEach((imgUrl, index) => {
+                        const thumb = document.createElement("img");
+                        thumb.src = imgUrl;
+
+                        if (imgUrl === sala.img || index === 0) {
+                            thumb.classList.add("active");
+                            modalImg.src = imgUrl;
+                        }
+
+                        thumb.addEventListener("click", () => {
+                            modalImg.src = imgUrl;
+                            document.querySelectorAll(".modal-thumbnails img").forEach(t => t.classList.remove("active"));
+                            thumb.classList.add("active");
+                        });
+
+                        modalThumbnails.appendChild(thumb);
+                    });
+                }
 
                 modalOverlay.classList.add("active");
             });
