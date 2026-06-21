@@ -41,8 +41,10 @@ export default async function handler(req, res) {
 
                 let galeriaUrls = [];
                 if (listData.Contents) {
+                    const validImages = listData.Contents.filter(item => !item.Key.endsWith('/'));
+
                     galeriaUrls = await Promise.all(
-                        listData.Contents.map(async (item) => {
+                        validImages.map(async (item) => {
                             const imgCommand = new GetObjectCommand({
                                 Bucket: bucketName,
                                 Key: item.Key,
